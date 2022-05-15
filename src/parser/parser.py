@@ -9,14 +9,22 @@ def parse():
     form_df = _get_data_frame_from_xlsx()
     form_df = _make_column_names_parsible(form_df)
     form_df = _filter_necessary_columns(form_df)
-    print(form_df.columns)
+    _write_results_to_xlsx(form_df)
+
+
+def _write_results_to_xlsx(form_df):
+    target_path = str(_get_root_path() / 'results.xlsx')
+    form_df.to_excel(excel_writer=target_path, sheet_name='raw_results')
 
 
 def _get_data_frame_from_xlsx() -> DataFrame:
-    form_path = str(next(
-        Path(__file__).parent.parent.parent.glob('Test Form.xlsx')))
+    form_path = str(next(_get_root_path().glob('Test Form.xlsx')))
     form_df = pandas.read_excel(io=form_path, sheet_name='Form1')
     return form_df
+
+
+def _get_root_path():
+    return Path(__file__).parent.parent.parent
 
 
 def _make_column_names_parsible(form_df: DataFrame) -> DataFrame:
