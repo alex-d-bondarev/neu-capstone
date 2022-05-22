@@ -10,12 +10,11 @@ You can either:
 2. (If you don't know git cli) Click "Code" (green button) > Download Zip > unpack downloaded zip file in folder that you choose
 
 ### Install Jupyter Notebook
-
 #### Terminal (requires extra dependencies)
 Requires [pipenv](https://pipenv.pypa.io/en/latest/)
 Use terminal:
 ```shell
-pipenv install --python 3.8
+pipenv install --python 3.8 --ignore-pipfile
 pipenv shell
 jupyter notebook
 # to stop
@@ -38,5 +37,9 @@ exit
 #### Other
 There are many ways to install Jupyter Notebook and I cannot list them all.
 Ensure that you do not use free cloud solutions, as they may probably 
-make all survey data public.
-Ensure that the solution you find supports GitHub and Jupyter Notebook integration
+make all uploaded survey files public.
+
+## Usage
+1. Open notebooks > Parser.ipynb > follow the description
+2. Follow description
+3. Get .xlsx file with parsed data in the end
