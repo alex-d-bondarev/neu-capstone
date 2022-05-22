@@ -26,7 +26,7 @@ exit
 1. Open terminal
 2. Follow steps from https://jupyter.org/install#jupyter-notebook
 3. Once Jupyter Notebook is launched navigate to the folder you downloaded the code to
-4. Open notebooks > Install pip libraries.ipynb > follow the description
+4. Open notebooks > `Install pip libraries.ipynb` > follow the description
 
 #### Windows
 1. Follow this article: https://www.geeksforgeeks.org/how-to-install-jupyter-notebook-in-windows/
