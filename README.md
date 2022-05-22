@@ -40,6 +40,6 @@ Ensure that you do not use free cloud solutions, as they may probably
 make all uploaded survey files public.
 
 ## Usage
-1. Open notebooks > Parser.ipynb > follow the description
+1. Open notebooks > `Parser.ipynb`
 2. Follow description
-3. Get .xlsx file with parsed data in the end
+3. Get `.xlsx` file with parsed data in the end
