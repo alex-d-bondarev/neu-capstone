@@ -9,14 +9,13 @@ You can either:
 1. Use git cli to clone this repository
 2. (If you don't know git cli) Click "Code" (green button) > Download Zip > unpack downloaded zip file in folder that you choose
 
-### Terminal (requires extra dependencies)
-Requires [pyenv](https://github.com/pyenv/pyenv) 
-and [pipenv](https://pipenv.pypa.io/en/latest/)
+### Install Jupyter Notebook
+
+#### Terminal (requires extra dependencies)
+Requires [pipenv](https://pipenv.pypa.io/en/latest/)
 Use terminal:
 ```shell
-pyenv install  3.10.4
-pyenv local 3.10.4
-pipenv install
+pipenv install --python 3.8
 pipenv shell
 jupyter notebook
 # to stop
@@ -24,9 +23,20 @@ CTRL + C
 exit
 ```
 
-### Mac (default terminal)
+#### Mac (default terminal)
 1. Open terminal
 2. Follow steps from https://jupyter.org/install#jupyter-notebook
+3. Once Jupyter Notebook is launched navigate to the folder you downloaded the code to
+4. Open notebooks > Install pip libraries.ipynb > follow the description
 
-### Windows
-Follow this article: https://www.geeksforgeeks.org/how-to-install-jupyter-notebook-in-windows/
+#### Windows
+1. Follow this article: https://www.geeksforgeeks.org/how-to-install-jupyter-notebook-in-windows/
+2. Once Jupyter Notebook is launched navigate to the folder you downloaded the code to
+3. (If you used Anaconda) Open `notebooks` > `Install conda libraries.ipynb` > follow the description
+4. (If you used Pip) Open `notebooks` > `Install pip libraries.ipynb` > follow the description
+
+#### Other
+There are many ways to install Jupyter Notebook and I cannot list them all.
+Ensure that you do not use free cloud solutions, as they may probably 
+make all survey data public.
+Ensure that the solution you find supports GitHub and Jupyter Notebook integration
