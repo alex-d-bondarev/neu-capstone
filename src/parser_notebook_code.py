@@ -28,7 +28,7 @@ from spacy.tokens import Doc
 from typing import List
 
 # Download spacy NLP model
-# TODO: extract to a separate function. No Unit test
+# TODO: use get_spacy_nlp_model()
 spacy_model = 'en_core_web_sm'
 try:
     nlp = spacy.load(spacy_model)
@@ -46,7 +46,7 @@ except OSError:
 # In[ ]:
 
 
-# TODO: rename, add unit test
+# TODO: use test_pandas_headers_renaming()
 def remove_illegal_chars(text: str) -> str:
     """
     Remove all characters from the given text that are not English letters, 
@@ -62,7 +62,7 @@ def remove_illegal_chars(text: str) -> str:
 # 1. Replace empty responses with 'no response' keyword
 # 2. Replace NA, N/A, etc
     # 2.1. Trim spaces
-    # 2.2. Allways compare lower case text
+    # 2.2. Always compare lower case text
     # 2.3. Never update input, but create a new output
 # 3. Unit test each step
 def _replace_na_with_zeros(series: Series) -> Series:
