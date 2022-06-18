@@ -12,7 +12,7 @@ You can either:
 ### Install Jupyter Notebook
 #### Terminal (requires extra dependencies)
 Requires [pipenv](https://pipenv.pypa.io/en/latest/)
-Use terminal:
+Use terminal and navigate to the folder with code:
 ```shell
 pipenv install --python 3.8 --ignore-pipfile
 pipenv shell
