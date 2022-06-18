@@ -58,13 +58,7 @@ def remove_illegal_chars(text: str) -> str:
     return text
 
 
-# TODO: need to have a following logic:
-# 1. Replace empty responses with 'no response' keyword
-# 2. Replace NA, N/A, etc
-    # 2.1. Trim spaces
-    # 2.2. Always compare lower case text
-    # 2.3. Never update input, but create a new output
-# 3. Unit test each step
+# TODO: use mark_no_responses(), trim_spaces(), and test_na_replaced_with_zeros()
 def _replace_na_with_zeros(series: Series) -> Series:
     na_values = ['Na', 'None', 'None ', 'na', 'N/A', ' ']
     return series[~series.isin(na_values)]
