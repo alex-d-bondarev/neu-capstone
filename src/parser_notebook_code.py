@@ -64,10 +64,7 @@ def _replace_na_with_zeros(series: Series) -> Series:
     return series[~series.isin(na_values)]
 
 
-# TODO:
-# 1. Rename
-# 2. Filtering and plotting should be separate steps
-# 3. Unit test each step
+# TODO: use prepare_data_for_plotting()
 def plot_bar_chart(series: Series, ax: Axes = None) -> None:
     """
     Show a bar chart for given data series.
