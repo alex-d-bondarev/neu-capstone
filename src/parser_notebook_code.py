@@ -89,10 +89,7 @@ def plot_bar_chart(series: Series, ax: Axes = None) -> None:
         )
 
 
-# TODO:
-# 1. Rename
-# 2. Final plotting should be more general and take range as input
-# 3. No Unit test
+# TODO: no changes + use 'ExtendedSeries' now
 def plot_1_10_hist_chart(series: Series) -> None:
     """
     Print mean value and show histogram chart for given data series.
@@ -106,7 +103,7 @@ def plot_1_10_hist_chart(series: Series) -> None:
     )
 
 
-# TODO: Add unit tests
+# TODO: use merge_to_string()
 def merge_into_single_string(series: Series) -> str:
     """Self evident"""
     return ' '.join(series.values.tolist())

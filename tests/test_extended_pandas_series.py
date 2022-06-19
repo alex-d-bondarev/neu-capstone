@@ -93,3 +93,11 @@ def test_data_is_prepared_for_bar_chart():
 
     assert actual_data.keys().tolist() == expected_values
     assert actual_data.tolist() == expected_counts
+
+
+def test_series_to_string_merge():
+    initial_series = ExtendedSeries(pandas.Series(
+        data=['test', 'some text', 2], name="test"))
+    expected_string = 'test some text 2'
+
+    assert initial_series.merge_to_string() == expected_string

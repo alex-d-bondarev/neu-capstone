@@ -1,3 +1,4 @@
+from matplotlib.axes import Axes
 from pandas import Series
 
 
@@ -94,3 +95,39 @@ class ExtendedSeries(Series):
                               value_counts(normalize=True).
                               mul(100).
                               round(1))
+
+    def plot_bar_chart(self: 'ExtendedSeries', ax: Axes = None) -> None:
+        """
+            Show a bar chart for given data series.
+            Values such as NaN, None, etc. are converted to 0.
+            Data values are lazy sorted
+            Data values are converted to percentages.
+            x labels are rotated 15%
+            """
+        if self.empty:
+            print("No Data for bar chart")
+        else:
+            self.prepare_data_for_plotting().plot(
+                ylabel="percentage",
+                kind="bar",
+                rot=15,
+                ax=ax,
+            )
+
+    def plot_1_10_hist_chart(self: 'ExtendedSeries') -> None:
+        """
+        Print mean value and show histogram chart for given data series.
+        Always show x axis 1 to 10
+        """
+        print(f'Mean value is {round(self.mean(), 1)}')
+
+        self.plot(
+            kind='hist',
+            xticks=range(1, 11)
+        )
+
+    def merge_to_string(self: 'ExtendedSeries') -> str:
+        """Self evident"""
+        values = self.values.tolist()
+        string_values = [str(value) for value in values]  # noqa
+        return ' '.join(string_values)
