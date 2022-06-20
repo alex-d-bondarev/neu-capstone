@@ -1,8 +1,5 @@
-from typing import List
-
 import numpy
 import pandas
-from pandas import Series
 
 from src.common_data import NO_RESPONSE, NA_SYNONYMS
 from src.extended_pandas_series import ExtendedSeries
@@ -15,67 +12,61 @@ EXAMPLE_DATAFRAME = pandas.DataFrame({'test': EXAMPLE_VALUES})
 EXAMPLE_DATAFRAME_COPY = EXAMPLE_DATAFRAME.copy()
 
 
-def _assert_series_is_expected_and_initial_series_did_not_change(
-        actual_series: Series, expected_data: List) -> None:
-    expected = ExtendedSeries(
-        pandas.Series(
-            data=expected_data,
-            name="test"))
-    pandas.testing.assert_series_equal(
-        actual_series,
-        expected
-    )
-
-
 def test_empty_values_replaced_with_no_response():
-    expected_data = [
+    expected = [
         'valid response', 'n/a', NO_RESPONSE, NO_RESPONSE, ' test',
         'test ', pandas.NA, numpy.nan, None, 'none', 'none', 'na', 'na',
         1, 0, 'in process', 'in the process'
     ]
 
-    _assert_series_is_expected_and_initial_series_did_not_change(
-        actual_series=ExtendedSeries(EXAMPLE_DATAFRAME['test']).mark_no_responses(),
-        expected_data=expected_data
-    )
+    actual = ExtendedSeries(
+        EXAMPLE_DATAFRAME['test']).mark_no_responses().tolist()
+    assert actual == expected
 
 
 def test_trim_spaces():
-    expected_data = [
+    expected = [
         'valid response', 'n/a', '', '', 'test', 'test', pandas.NA,
         numpy.nan, None, 'none', 'none', 'na', 'na', 1, 0, 'in process',
         'in the process'
     ]
 
-    _assert_series_is_expected_and_initial_series_did_not_change(
-        actual_series=ExtendedSeries(EXAMPLE_DATAFRAME['test']).trim_spaces(),
-        expected_data=expected_data
-    )
+    actual = ExtendedSeries(EXAMPLE_DATAFRAME['test']).trim_spaces().tolist()
+    assert actual == expected
 
 
 def test_na_grouped():
-    expected_data = [
+    expected = [
         'valid response', NA_SYNONYMS.main, ' ', '', ' test', 'test ',
         NA_SYNONYMS.main, NA_SYNONYMS.main, NA_SYNONYMS.main, 'none', 'none',
         NA_SYNONYMS.main, NA_SYNONYMS.main, 1, 0, 'in process', 'in the process'
     ]
 
-    _assert_series_is_expected_and_initial_series_did_not_change(
-        actual_series=ExtendedSeries(EXAMPLE_DATAFRAME['test']).group_na_values(),
-        expected_data=expected_data
-    )
+    actual = ExtendedSeries(
+        EXAMPLE_DATAFRAME['test']).group_na_values().tolist()
+    assert actual == expected
 
 
 def test_similar_answers_replaced():
-    expected_data = [
+    expected = [
         'valid response', 'n/a', ' ', '', ' test', 'test ', pandas.NA, numpy.nan,
         None, 'none', 'none', 'na', 'na', 1, 0, 'in process', 'in process'
     ]
 
-    _assert_series_is_expected_and_initial_series_did_not_change(
-        actual_series=ExtendedSeries(EXAMPLE_DATAFRAME['test']).replace_similar_answers(),
-        expected_data=expected_data
-    )
+    actual = ExtendedSeries(
+        EXAMPLE_DATAFRAME['test']).replace_similar_answers().tolist()
+    assert actual == expected
+
+
+def test_no_nan_records():
+    expected = [
+        'valid response', 'N/A', ' ', '', ' test', 'test ', 'None',
+        'none', 'Na', 'na', 1, 0, 'In Process', 'in the process'
+    ]
+
+    actual = ExtendedSeries(
+        EXAMPLE_DATAFRAME['test']).filter_out_nan().tolist()
+    assert actual == expected
 
 
 def test_data_is_prepared_for_bar_chart():

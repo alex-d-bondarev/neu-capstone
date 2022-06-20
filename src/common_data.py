@@ -15,3 +15,7 @@ SYNONYMS_LIST = [
 NO_RESPONSE = 'no_response'
 
 DROP_WORDS = ['who', 'impacts']
+
+PLOT_WIDTH = 6.5
+DOUBLE_PLOT_HEIGHT = 12
+SPACE_BETWEEN_PLOTS = 0.4

@@ -132,3 +132,10 @@ class ExtendedSeries(Series):
         values = self.values.tolist()
         string_values = [str(value) for value in values]  # noqa
         return ' '.join(string_values)
+
+    def filter_out_nan(self: 'ExtendedSeries') -> 'ExtendedSeries':
+        """
+        Return new series without NaN values, without updating data frame
+        """
+        nan_values = self.isnull()
+        return ExtendedSeries(self.copy()[~nan_values])

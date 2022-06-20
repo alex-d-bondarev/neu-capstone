@@ -29,13 +29,16 @@ from typing import List
 
 # Download spacy NLP model
 # TODO: use get_spacy_nlp_model()
+from src.common_data import PLOT_WIDTH, DOUBLE_PLOT_HEIGHT, SPACE_BETWEEN_PLOTS
+
 spacy_model = 'en_core_web_sm'
 try:
     nlp = spacy.load(spacy_model)
 except OSError:
     print('Downloading language model for the spaCy POS tagger\n'
-        "(don't worry, this will only happen once)")
+          "(don't worry, this will only happen once)")
     from spacy.cli import download
+
     download(spacy_model)
     nlp = spacy.load(spacy_model)
 
@@ -82,10 +85,10 @@ def plot_bar_chart(series: Series, ax: Axes = None) -> None:
             .sort_values() \
             .value_counts(normalize=True) \
             .mul(100).round(1).plot(
-                ylabel="percentage",
-                kind="bar",
-                rot=15,
-                ax=ax,
+            ylabel="percentage",
+            kind="bar",
+            rot=15,
+            ax=ax,
         )
 
 
@@ -109,10 +112,7 @@ def merge_into_single_string(series: Series) -> str:
     return ' '.join(series.values.tolist())
 
 
-# TODO:
-# 1. Rename
-# 2. drop_words should be returned via method and stored outside
-# 3. Unit test each step
+# TODO: use NlpHelper
 def _filter_out_keywords(doc: Doc) -> List:
     drop_words = [' ', '0', 'who', 'impacts', 'na']
 
@@ -120,18 +120,13 @@ def _filter_out_keywords(doc: Doc) -> List:
         token.text.lower()
         for token in doc
         if not token.is_stop
-        and (token.pos_ == "NOUN" or token.pos_ == "PROPN" or token.pos_ == "PRON")
-        and not token.is_punct
-        and not token.text.lower() in drop_words
+           and (token.pos_ == "NOUN" or token.pos_ == "PROPN" or token.pos_ == "PRON")
+           and not token.is_punct
+           and not token.text.lower() in drop_words
     ]
 
 
-# TODO:
-# 1. Rename
-# 2. synonyms should be a separate function
-#    - Need to group synonyms before cells are merged
-# 3. All words should be lower cased
-# 4. Unit test each step
+# TODO: use NlpHelper
 def get_nouns_from(series: Series) -> List:
     """
     Return list of nouns for given data series. Replace known synonyms.
@@ -151,10 +146,7 @@ def get_nouns_from(series: Series) -> List:
     return nouns
 
 
-# TODO:
-# 1. Rename
-# 2. data preparation should be a separate function with unit tests
-# 3. no unit tests
+# TODO: use get_counter_with_top
 def plot_most_common_words(words: List[str], top: int, ax: Axes = None) -> None:
     """
     Shows empty chart if "Other" option was not chosen
@@ -182,10 +174,10 @@ def plot_most_common_words(words: List[str], top: int, ax: Axes = None) -> None:
             pyplot.barh(y_pos, x_values)
 
         pyplot.yticks(y_pos, keys)
-        pyplot.xticks(range(0, (max_value+1)))
+        pyplot.xticks(range(0, (max_value + 1)))
 
 
-# TODO: add unit tests
+# TODO: use ExtendedSeries
 def filter_out_nan(series: Series) -> Series:
     """
     Return new series without NaN values, without updating data frame
@@ -194,16 +186,12 @@ def filter_out_nan(series: Series) -> Series:
     return series[~nan_values]
 
 
-
 def plot_text_answer(series: Series, top: int, ax: Axes = None) -> None:
     nouns = get_nouns_from(_replace_na_with_zeros(filter_out_nan(series)))
     plot_most_common_words(words=nouns, top=top, ax=ax)
 
 
-
-# TODO:
-# 1. Move data preparation to separate function with unit tests
-# 2. Extract plot size parameters as GLOBAL vars
+# TODO: use split_out_other_answers
 def plot_multichoice_with_other(series: Series, expected_values: List, top: int) -> None:
     """
     Show 2 plots if enough data
@@ -215,13 +203,9 @@ def plot_multichoice_with_other(series: Series, expected_values: List, top: int)
 
     expected_series = temp_s[temp_s.isin(expected_values)]
     unexpected_series = temp_s[~temp_s.isin(expected_values)]
-    
-    width = 6.5
-    height = 12
-    between = 0.4
 
-    fig, axs = pyplot.subplots(2, figsize=(width, height))
-    pyplot.subplots_adjust(hspace=between)
+    fig, axs = pyplot.subplots(2, figsize=(PLOT_WIDTH, DOUBLE_PLOT_HEIGHT))
+    pyplot.subplots_adjust(hspace=SPACE_BETWEEN_PLOTS)
 
     plot_bar_chart(expected_series, ax=axs[0])
     plot_text_answer(unexpected_series, top=top, ax=axs[1])
@@ -239,7 +223,6 @@ def plot_multichoice_with_other(series: Series, expected_values: List, top: int)
 raw_data = FileChooser()
 display(raw_data)
 
-
 # ## Read the file
 # ### Step 1
 # Read the file, remove unparsible characters, and print available columns
@@ -248,8 +231,8 @@ display(raw_data)
 
 
 # open excel file as pandas dataframe
-raw_df = pandas.read_excel(io=raw_data.selected, 
-                            sheet_name='Form1')
+raw_df = pandas.read_excel(io=raw_data.selected,
+                           sheet_name='Form1')
 
 # remove illegal characters from column names
 headers_list = raw_df.columns.values.tolist()
@@ -258,8 +241,7 @@ raw_df.columns = headers_list
 
 # Print result
 print(f'All columns after cleanup:')
-print(*headers_list, sep = "\n")
-
+print(*headers_list, sep="\n")
 
 # ### Step 2
 # Choose columns that you will be working with by listing them below. Use single quotes and seperate by comas.
@@ -284,8 +266,7 @@ necessary_columns = [
     'Would you like to participate in an optional interview to share more insights',
     'Please share your email so that we may contact you for an optional interview Leave empty if you prefer to be anonymous',
     'Business Name Leave empty if you prefer to be anonymous',
-    ]
-
+]
 
 # ### Step 3
 # Filter columns based on the list above
@@ -294,7 +275,6 @@ necessary_columns = [
 
 
 df = raw_df.filter(items=necessary_columns, axis=1)
-
 
 # ## Parse questions
 
@@ -305,15 +285,13 @@ df = raw_df.filter(items=necessary_columns, axis=1)
 
 plot_bar_chart(df['Have you hired Big Sky Franchise Team'])
 
-
-# ### 2. How likely would you recommend Big Sky Franchise Team to a friend or colleague? 
+# ### 2. How likely would you recommend Big Sky Franchise Team to a friend or colleague?
 
 # In[ ]:
 
 
 column_name = 'How likely would you recommend Big Sky Franchise Team to a friend or colleague 1 is not at all likely and 10 is extremelylikely'
 plot_1_10_hist_chart(df[column_name])
-
 
 # ### 3. If you were to do it all over, would you hire Big Sky again?
 
@@ -323,7 +301,6 @@ plot_1_10_hist_chart(df[column_name])
 # Drop NaN values. Are they coming from non customers? Need to add a better filter... TBD!
 column_name = 'If you were to do it all over would you hire Big Sky again'
 plot_bar_chart(filter_out_nan(df[column_name]))
-
 
 # ### 4. If no, could you please tell why?
 
@@ -340,7 +317,6 @@ plot_bar_chart(filter_out_nan(df[column_name]))
 
 plot_bar_chart(df['What year did you start franchising'])
 
-
 # ### 6/7/8/9. How many total franchises have you sold ...
 
 # In[ ]:
@@ -348,7 +324,6 @@ plot_bar_chart(df['What year did you start franchising'])
 
 column_name = 'How many total franchises have you sold since you started franchisingif not applicable enter NA'
 plot_bar_chart(df[column_name])
-
 
 # ### 10. What were your biggest challenges or obstacles to launching your franchise program?
 
@@ -358,7 +333,6 @@ plot_bar_chart(df[column_name])
 column_name = 'What were your biggest challenges or obstacles to launching your franchise program'
 plot_text_answer(df[column_name], top=3)
 
-
 # ### 11. What were your biggest challenges to selling franchises?
 
 # In[ ]:
@@ -367,7 +341,6 @@ plot_text_answer(df[column_name], top=3)
 column_name = 'What were your biggest challenges to selling franchises'
 plot_text_answer(df[column_name], top=3)
 
-
 # ### 12. What have been your biggest challenges in supporting your franchisees
 
 # In[ ]:
@@ -375,12 +348,11 @@ plot_text_answer(df[column_name], top=3)
 
 column_name = 'What have been your biggest challenges in supporting your franchisees select all that apply2'
 expected_values = [
-	'None', 'Their motivation', 'They did not follow system', 'Their finances and financial management', 
-	'Lack of marketing spend by franchisee', 'Quality issues', 
-	'My (or franchisor) coaching skills', 'Miscommunication'
+    'None', 'Their motivation', 'They did not follow system', 'Their finances and financial management',
+    'Lack of marketing spend by franchisee', 'Quality issues',
+    'My (or franchisor) coaching skills', 'Miscommunication'
 ]
 plot_multichoice_with_other(series=df[column_name], expected_values=expected_values, top=5)
-
 
 # ### 13. What areas do you need help with?
 
@@ -389,12 +361,11 @@ plot_multichoice_with_other(series=df[column_name], expected_values=expected_val
 
 column_name = 'What areas do you need help with Select all that apply'
 expected_values = [
-	'None', 'Whole franchising process', 'Business plan', 'Financial processes', 
-	'Competitors analysis', 'Legal documentation', 'Licensing documentation', 
-	'Marketing', 'Quality Assurance', 'Franchisee training processes', 'Technical support'
+    'None', 'Whole franchising process', 'Business plan', 'Financial processes',
+    'Competitors analysis', 'Legal documentation', 'Licensing documentation',
+    'Marketing', 'Quality Assurance', 'Franchisee training processes', 'Technical support'
 ]
 plot_multichoice_with_other(series=df[column_name], expected_values=expected_values, top=2)
-
 
 # ### 14/15/16. Private data, count number of volunteers only
 
