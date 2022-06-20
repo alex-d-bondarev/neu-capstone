@@ -1,4 +1,4 @@
-from src.parser_helpers import make_text_pandas_header_compatible
+from src.common_helpers import make_text_pandas_header_compatible
 
 
 def test_pandas_headers_renaming():

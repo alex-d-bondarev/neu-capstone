@@ -15,8 +15,7 @@ def make_text_pandas_header_compatible(text: str) -> str:
     return text.strip()
 
 
-def get_counter_with_top(words: List[str], top: int) -> Counter:
-    nouns_freq = Counter(words)
+def get_counter_with_top(nouns_freq: Counter, top: int) -> Counter:
     top_nouns = nouns_freq.most_common(top)
     print(f'All keywords:\n{nouns_freq}')
 

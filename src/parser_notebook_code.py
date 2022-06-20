@@ -11,37 +11,13 @@
 # In[ ]:
 
 
-import numpy
 import pandas
-import re
-import spacy
-import xlsxwriter
 
-from collections import Counter
 from ipyfilechooser import FileChooser
-from matplotlib import pyplot
-from matplotlib.axes import Axes
-from pathlib import Path
-from pandas import DataFrame
-from pandas.core.series import Series
-from spacy.tokens import Doc
-from typing import List
 
-# Download spacy NLP model
-# TODO: use get_spacy_nlp_model()
-from src.common_data import PLOT_WIDTH, DOUBLE_PLOT_HEIGHT, SPACE_BETWEEN_PLOTS
-
-spacy_model = 'en_core_web_sm'
-try:
-    nlp = spacy.load(spacy_model)
-except OSError:
-    print('Downloading language model for the spaCy POS tagger\n'
-          "(don't worry, this will only happen once)")
-    from spacy.cli import download
-
-    download(spacy_model)
-    nlp = spacy.load(spacy_model)
-
+from src.common_helpers import make_text_pandas_header_compatible
+from src.extended_pandas_series import ExtendedSeries
+from src.plot_helpers import plot_bar_chart, plot_1_10_hist_chart, plot_text_answer, plot_multichoice_with_other
 
 # ### Precondition 2
 # Define methods that will be used further in this notebook. Need to run this section **only once** each time jupiter notebook is launched. Also need to do it each time you update the code
@@ -49,169 +25,6 @@ except OSError:
 # In[ ]:
 
 
-# TODO: use test_pandas_headers_renaming()
-def remove_illegal_chars(text: str) -> str:
-    """
-    Remove all characters from the given text that are not English letters, 
-    numbers, and " " (space character).
-    return updated text
-    """
-    text = re.sub('[^A-Za-z0-9\ ]+', '', text)
-    text.strip()
-    return text
-
-
-# TODO: use mark_no_responses(), trim_spaces(), and test_na_replaced_with_zeros()
-def _replace_na_with_zeros(series: Series) -> Series:
-    na_values = ['Na', 'None', 'None ', 'na', 'N/A', ' ']
-    return series[~series.isin(na_values)]
-
-
-# TODO: use prepare_data_for_plotting()
-def plot_bar_chart(series: Series, ax: Axes = None) -> None:
-    """
-    Show a bar chart for given data series.
-    Values such as NaN, None, etc. are converted to 0.
-    Data values are lazy sorted
-    Data values are converted to percentages.
-    x labels are rotated 15%
-    """
-    if series.empty:
-        print("No Data for bar chart")
-    else:
-        _replace_na_with_zeros(series) \
-            .fillna('0') \
-            .replace(['Na', 'None', 'None ', 'na'], '0') \
-            .sort_values() \
-            .value_counts(normalize=True) \
-            .mul(100).round(1).plot(
-            ylabel="percentage",
-            kind="bar",
-            rot=15,
-            ax=ax,
-        )
-
-
-# TODO: no changes + use 'ExtendedSeries' now
-def plot_1_10_hist_chart(series: Series) -> None:
-    """
-    Print mean value and show histogram chart for given data series.
-    Always show x axis 1 to 10
-    """
-    print(f'Mean value is {round(series.mean(), 1)}')
-
-    series.plot(
-        kind='hist',
-        xticks=range(1, 11)
-    )
-
-
-# TODO: use merge_to_string()
-def merge_into_single_string(series: Series) -> str:
-    """Self evident"""
-    return ' '.join(series.values.tolist())
-
-
-# TODO: use NlpHelper
-def _filter_out_keywords(doc: Doc) -> List:
-    drop_words = [' ', '0', 'who', 'impacts', 'na']
-
-    return [
-        token.text.lower()
-        for token in doc
-        if not token.is_stop
-           and (token.pos_ == "NOUN" or token.pos_ == "PROPN" or token.pos_ == "PRON")
-           and not token.is_punct
-           and not token.text.lower() in drop_words
-    ]
-
-
-# TODO: use NlpHelper
-def get_nouns_from(series: Series) -> List:
-    """
-    Return list of nouns for given data series. Replace known synonyms.
-    """
-    text_to_analyse = remove_illegal_chars(merge_into_single_string(series))
-    nlp_doc = nlp(text_to_analyse)
-
-    nouns = _filter_out_keywords(nlp_doc)
-
-    # Replace known synonyms
-    synonyms = [('budget', 'cost'),
-                ('covid', 'pandemic'),
-                ('partner', 'buyer', 'franchisee')]
-    for (syn1, syn2) in synonyms:
-        nouns = [word.replace(syn1, syn2) for word in nouns]
-
-    return nouns
-
-
-# TODO: use get_counter_with_top
-def plot_most_common_words(words: List[str], top: int, ax: Axes = None) -> None:
-    """
-    Shows empty chart if "Other" option was not chosen
-    """
-    if len(words) > 0:
-        # Get top words
-        nouns_freq = Counter(words)
-        top_nouns = nouns_freq.most_common(top)
-        print(f'All keywords:\n{nouns_freq}')
-
-        display_counter = Counter()
-        for (k, v) in top_nouns:
-            display_counter[k] = v
-
-        # Create a plot
-        # Credit to https://stackoverflow.com/a/22222738/8661297
-        keys = display_counter.keys()
-        y_pos = numpy.arange(len(keys))
-        x_values = display_counter.values()
-        max_value = display_counter.most_common(1)[0][1]
-
-        if ax:
-            ax.barh(y_pos, x_values)
-        else:
-            pyplot.barh(y_pos, x_values)
-
-        pyplot.yticks(y_pos, keys)
-        pyplot.xticks(range(0, (max_value + 1)))
-
-
-# TODO: use ExtendedSeries
-def filter_out_nan(series: Series) -> Series:
-    """
-    Return new series without NaN values, without updating data frame
-    """
-    nan_values = series.isnull()
-    return series[~nan_values]
-
-
-def plot_text_answer(series: Series, top: int, ax: Axes = None) -> None:
-    nouns = get_nouns_from(_replace_na_with_zeros(filter_out_nan(series)))
-    plot_most_common_words(words=nouns, top=top, ax=ax)
-
-
-# TODO: use split_out_other_answers
-def plot_multichoice_with_other(series: Series, expected_values: List, top: int) -> None:
-    """
-    Show 2 plots if enough data
-    First plot is plot_bar_chart() for expected values
-    Second plot is plot_text_answer() for "Other" values
-    """
-    temp_s = series.str.split(';').apply(pandas.Series).stack()
-    temp_s.index = temp_s.index.droplevel(-1)
-
-    expected_series = temp_s[temp_s.isin(expected_values)]
-    unexpected_series = temp_s[~temp_s.isin(expected_values)]
-
-    fig, axs = pyplot.subplots(2, figsize=(PLOT_WIDTH, DOUBLE_PLOT_HEIGHT))
-    pyplot.subplots_adjust(hspace=SPACE_BETWEEN_PLOTS)
-
-    plot_bar_chart(expected_series, ax=axs[0])
-    plot_text_answer(unexpected_series, top=top, ax=axs[1])
-
-
-# TODO: review code below in V3
 # ### Precondition 3
 # Choose raw excel file. 
 # Download survey results to your computer. Select downloaded file with "Select" button. 
@@ -236,7 +49,7 @@ raw_df = pandas.read_excel(io=raw_data.selected,
 
 # remove illegal characters from column names
 headers_list = raw_df.columns.values.tolist()
-headers_list = list(map(remove_illegal_chars, headers_list))
+headers_list = list(map(make_text_pandas_header_compatible, headers_list))
 raw_df.columns = headers_list
 
 # Print result
@@ -300,7 +113,7 @@ plot_1_10_hist_chart(df[column_name])
 
 # Drop NaN values. Are they coming from non customers? Need to add a better filter... TBD!
 column_name = 'If you were to do it all over would you hire Big Sky again'
-plot_bar_chart(filter_out_nan(df[column_name]))
+plot_bar_chart(ExtendedSeries(df[column_name]).filter_out_nan())
 
 # ### 4. If no, could you please tell why?
 
@@ -352,7 +165,7 @@ expected_values = [
     'Lack of marketing spend by franchisee', 'Quality issues',
     'My (or franchisor) coaching skills', 'Miscommunication'
 ]
-plot_multichoice_with_other(series=df[column_name], expected_values=expected_values, top=5)
+plot_multichoice_with_other(series=df[column_name], main_values=expected_values, top=5)
 
 # ### 13. What areas do you need help with?
 
@@ -365,7 +178,7 @@ expected_values = [
     'Competitors analysis', 'Legal documentation', 'Licensing documentation',
     'Marketing', 'Quality Assurance', 'Franchisee training processes', 'Technical support'
 ]
-plot_multichoice_with_other(series=df[column_name], expected_values=expected_values, top=2)
+plot_multichoice_with_other(series=df[column_name], main_values=expected_values, top=2)
 
 # ### 14/15/16. Private data, count number of volunteers only
 
