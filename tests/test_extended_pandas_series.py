@@ -4,7 +4,7 @@ import numpy
 import pandas
 from pandas import Series
 
-from src.common_data import NO_RESPONSE
+from src.common_data import NO_RESPONSE, NA_SYNONYMS
 from src.extended_pandas_series import ExtendedSeries
 
 EXAMPLE_VALUES = [
@@ -55,8 +55,9 @@ def test_trim_spaces():
 
 def test_na_grouped():
     expected_data = [
-        'valid response', 'n/a', ' ', '', ' test', 'test ', 'n/a', 'n/a', 'n/a',
-        'none', 'none', 'n/a', 'n/a', 1, 0, 'in process', 'in the process'
+        'valid response', NA_SYNONYMS.main, ' ', '', ' test', 'test ',
+        NA_SYNONYMS.main, NA_SYNONYMS.main, NA_SYNONYMS.main, 'none', 'none',
+        NA_SYNONYMS.main, NA_SYNONYMS.main, 1, 0, 'in process', 'in the process'
     ]
 
     _assert_series_is_expected_and_initial_series_did_not_change(
@@ -86,7 +87,7 @@ def test_data_is_prepared_for_bar_chart():
     ]
     initial_series = ExtendedSeries(pandas.Series(
         data=initial_data, name="test"))
-    expected_values = ['n/a', '2022', 'in process', '2007', '2017-18', '2019',
+    expected_values = [NA_SYNONYMS.main, '2022', 'in process', '2007', '2017-18', '2019',
                        '2021', 'currently planning', 'have not yet']
     expected_counts = [47.8, 17.4, 8.7, 4.3, 4.3, 4.3, 4.3, 4.3, 4.3]
 

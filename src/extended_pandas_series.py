@@ -1,7 +1,7 @@
 from matplotlib.axes import Axes
 from pandas import Series
 
-from src.common_data import NO_RESPONSE
+from src.common_data import NO_RESPONSE, NA_SYNONYMS
 
 
 class ExtendedSeries(Series):
@@ -55,15 +55,14 @@ class ExtendedSeries(Series):
         Returned values are all lower case.
         :param self:
         """
-        common_na = 'n/a'
         return ExtendedSeries(
-            self.make_lower_case_series_copy().fillna(common_na).
+            self.make_lower_case_series_copy().fillna(NA_SYNONYMS.main).
             apply(
                 lambda value: value.lower()
                 if isinstance(value, str)
                 else value
             ).
-            replace(['na', 'n/a', 'n\\a'], common_na)
+            replace(NA_SYNONYMS.all, NA_SYNONYMS.main)
         )
 
     def replace_similar_answers(self: 'ExtendedSeries') -> 'ExtendedSeries':
