@@ -1,3 +1,5 @@
+from collections import Counter
+
 import pandas
 
 from src.common_data import NO_RESPONSE, NA_SYNONYMS
@@ -41,10 +43,19 @@ NO_SYNONYMS_LIST = [
     [NO_RESPONSE]
 ]
 
+COUNTER_RESULT = Counter({
+    NA_SYNONYMS.main: 3,
+    'approach': 2,
+    'issue': 1,
+    'partner': 1,
+    'pandemic': 1,
+    NO_RESPONSE: 1
+})
+
 
 def test_raw_list_of_strings_is_extracted_from_series():
-    expected = RAW_LIST.copy()
     initial_series = ExtendedSeries(INITIAL_SERIES.copy())
+    expected = RAW_LIST.copy()
 
     actual = NlpHelper().get_raw_list_of_lower_strings_from_series(
         series=initial_series)
@@ -61,10 +72,28 @@ def test_raw_list_is_nlp_processed():
     assert actual == expected
 
 
-def test_synonyms_are_removed():
+def test_synonyms_are_replaced():
     initial = NLP_LIST.copy()
     expected = NO_SYNONYMS_LIST.copy()
 
     actual = NlpHelper().remove_synonyms(initial)
+
+    assert actual == expected
+
+
+def test_counter_from_processed_values():
+    initial = NO_SYNONYMS_LIST.copy()
+    expected = COUNTER_RESULT.copy()
+
+    actual = NlpHelper().count_unique_occurrences(initial)
+
+    assert actual == expected
+
+
+def test_entire_nlp_process():
+    initial_series = ExtendedSeries(INITIAL_SERIES.copy())
+    expected = COUNTER_RESULT.copy()
+
+    actual = NlpHelper().count_series(series=initial_series)
 
     assert actual == expected
