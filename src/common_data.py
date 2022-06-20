@@ -7,8 +7,8 @@ NA_SYNONYMS = Synonyms('na', ['na', 'n/a', 'n\\a'])
 SYNONYMS_LIST = [
     Synonyms('in process', ['in the process', 'doing', 'in progress']),
     Synonyms('budget', ['budget', 'cost']),
-    Synonyms('pandemic', ['pandemic', 'covid', 'covid-19']),
-    Synonyms('partner', ['partner', 'buyer', 'franchisee']),
+    Synonyms('pandemic', ['pandemic', 'covid-19', 'covid']),
+    Synonyms('partner', ['partners', 'buyers', 'franchisee', 'buyer', 'partner']),
     NA_SYNONYMS,
 ]
 

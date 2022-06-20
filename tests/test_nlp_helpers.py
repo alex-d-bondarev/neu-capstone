@@ -7,7 +7,7 @@ from src.nlp_helpers import NlpHelper
 INITIAL_SERIES = pandas.Series(
     data=[
         'Approach franchisee, not only as a buyers, but also as a partners',
-        'The Covid-19 pandemic was a big issue ',
+        'The Covid-19 pandemic was a big issue for my approach ',
         'n/a',
         'na',
         pandas.NA,
@@ -16,7 +16,7 @@ INITIAL_SERIES = pandas.Series(
 
 RAW_LIST = [
     'approach franchisee, not only as a buyers, but also as a partners',
-    'the covid-19 pandemic was a big issue',
+    'the covid-19 pandemic was a big issue for my approach',
     NA_SYNONYMS.main,
     NA_SYNONYMS.main,
     NA_SYNONYMS.main,
@@ -25,7 +25,16 @@ RAW_LIST = [
 
 NLP_LIST = [
     ['approach', 'franchisee', 'buyers', 'partners'],
-    ['covid-19', 'pandemic', 'issue'],
+    ['covid-19', 'pandemic', 'issue', 'approach'],
+    [NA_SYNONYMS.main],
+    [NA_SYNONYMS.main],
+    [NA_SYNONYMS.main],
+    [NO_RESPONSE]
+]
+
+NO_SYNONYMS_LIST = [
+    ['approach', 'partner'],
+    ['approach', 'issue', 'pandemic'],
     [NA_SYNONYMS.main],
     [NA_SYNONYMS.main],
     [NA_SYNONYMS.main],
@@ -48,5 +57,14 @@ def test_raw_list_is_nlp_processed():
     expected = NLP_LIST.copy()
 
     actual = NlpHelper().get_nouns_from_raw_list(initial)
+
+    assert actual == expected
+
+
+def test_synonyms_are_removed():
+    initial = NLP_LIST.copy()
+    expected = NO_SYNONYMS_LIST.copy()
+
+    actual = NlpHelper().remove_synonyms(initial)
 
     assert actual == expected

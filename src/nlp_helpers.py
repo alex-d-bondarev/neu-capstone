@@ -1,9 +1,11 @@
+import copy
+import re
 from typing import List
 
 import spacy
 
-from spacy.tokens import Doc
-from src.common_data import DROP_WORDS, NA_SYNONYMS
+from spacy.tokens import Doc, Token
+from src.common_data import DROP_WORDS, NA_SYNONYMS, Synonyms, SYNONYMS_LIST
 from src.extended_pandas_series import ExtendedSeries
 
 
@@ -55,17 +57,12 @@ class NlpHelper:
             self._filter_out_nouns(self.nlp(value)) for value in raw_list]
         return self.filtered_values
 
-    @staticmethod
-    def _filter_out_nouns(doc: Doc):
+    def _filter_out_nouns(self, doc: Doc):
         return [
             token.text
             for token in doc if
             (
-                    (
-                            token.pos_ == "NOUN"
-                            or token.pos_ == "PROPN"
-                            or token.pos_ == "PRON"
-                    )
+                    self._is_noun(token=token)
                     and not token.is_stop
                     and not token.is_punct
                     and token.text not in DROP_WORDS
@@ -73,3 +70,35 @@ class NlpHelper:
                     token.text == NA_SYNONYMS.main
             )
         ]
+
+    @staticmethod
+    def _is_noun(token: Token):
+        return (token.pos_ == "NOUN"
+                or token.pos_ == "PROPN"
+                or token.pos_ == "PRON")
+
+    def remove_synonyms(self, values):
+        result = copy.deepcopy(values)
+
+        for synonyms in SYNONYMS_LIST:
+            result = self._replace_given_synonyms(
+                synonyms=synonyms, values=result)
+
+        for row_id, row in enumerate(result):
+            result[row_id] = sorted(list(set(row)))
+
+        return result
+
+    def _replace_given_synonyms(
+            self, synonyms: Synonyms, values: List[List[str]]):
+
+        result = copy.deepcopy(values)
+        synonyms_for_regex = "|".join(synonyms.all)
+        pattern = f'({synonyms_for_regex})'
+
+        for row_id, row in enumerate(result):
+            for word_id, word in enumerate(row):
+                result[row_id][word_id] = re.sub(
+                    pattern=pattern, repl=synonyms.main, string=word)
+
+        return result
