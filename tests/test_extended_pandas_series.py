@@ -4,6 +4,7 @@ import numpy
 import pandas
 from pandas import Series
 
+from src.common_data import NO_RESPONSE
 from src.extended_pandas_series import ExtendedSeries
 
 EXAMPLE_VALUES = [
@@ -28,7 +29,7 @@ def _assert_series_is_expected_and_initial_series_did_not_change(
 
 def test_empty_values_replaced_with_no_response():
     expected_data = [
-        'valid response', 'n/a', 'no response', 'no response', ' test',
+        'valid response', 'n/a', NO_RESPONSE, NO_RESPONSE, ' test',
         'test ', pandas.NA, numpy.nan, None, 'none', 'none', 'na', 'na',
         1, 0, 'in process', 'in the process'
     ]

@@ -129,6 +129,7 @@ def _filter_out_keywords(doc: Doc) -> List:
 # TODO:
 # 1. Rename
 # 2. synonyms should be a separate function
+#    - Need to group synonyms before cells are merged
 # 3. All words should be lower cased
 # 4. Unit test each step
 def get_nouns_from(series: Series) -> List:
@@ -142,7 +143,8 @@ def get_nouns_from(series: Series) -> List:
 
     # Replace known synonyms
     synonyms = [('budget', 'cost'),
-                ('covid', 'pandemic')]
+                ('covid', 'pandemic'),
+                ('partner', 'buyer', 'franchisee')]
     for (syn1, syn2) in synonyms:
         nouns = [word.replace(syn1, syn2) for word in nouns]
 

@@ -1,6 +1,8 @@
 from matplotlib.axes import Axes
 from pandas import Series
 
+from src.common_data import NO_RESPONSE
+
 
 class ExtendedSeries(Series):
     """Add extra methods to pandas Series class"""
@@ -22,14 +24,14 @@ class ExtendedSeries(Series):
 
     def mark_no_responses(self: 'ExtendedSeries') -> 'ExtendedSeries':
         """
-        Return a new series where empty responses are marked as 'no response'.
+        Return a new series where empty responses are marked as NO_RESPONSE.
         Returned values are all lower case.
         :param self:
         :param param:
         """
         return ExtendedSeries(
             self.make_lower_case_series_copy().
-            replace([' ', ''], 'no response')
+            replace([' ', ''], NO_RESPONSE)
         )
 
     def trim_spaces(self: 'ExtendedSeries') -> 'ExtendedSeries':
