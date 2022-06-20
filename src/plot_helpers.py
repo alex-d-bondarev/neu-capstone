@@ -26,7 +26,7 @@ def plot_bar_chart(series: Series, ax: Axes = None) -> None:
         ExtendedSeries(series).prepare_data_for_plotting().plot(
             ylabel="percentage",
             kind="bar",
-            rot=15,
+            rot=25,
             ax=ax,
         )
 
@@ -48,7 +48,7 @@ def plot_text_answer(series: Series, top: int, ax: Axes = None) -> None:
     """Self evident"""
     series_counter = NlpHelper().count_series(series=ExtendedSeries(series))
 
-    if series_counter.total() > 0:
+    if len(series_counter) > 0:
         display_counter = get_counter_with_top(series_counter, top)
 
         # Create a plot
