@@ -46,6 +46,6 @@ make all uploaded survey files public.
 
 ## Report
 ```shell
-jupyter nbconvert ./notebooks/Parser_v3.ipynb --to=html
-jupyter nbconvert ./notebooks/Parser_v3.ipynb --to=pdf
+jupyter nbconvert ./notebooks/data_analysis.ipynb --to=html
+jupyter nbconvert ./notebooks/data_analysis.ipynb --to=pdf
 ```

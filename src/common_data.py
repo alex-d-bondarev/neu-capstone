@@ -2,7 +2,7 @@ from collections import namedtuple
 
 Synonyms = namedtuple("Synonyms", "main all")
 
-NA_SYNONYMS = Synonyms('na', ['na', 'n/a', 'n\\a'])
+NA_SYNONYMS = Synonyms('na', ['na', 'n/a', 'n\\a', 'n//a'])
 
 SYNONYMS_LIST = [
     Synonyms('in process', ['in the process', 'doing', 'in progress']),
