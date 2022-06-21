@@ -43,3 +43,9 @@ make all uploaded survey files public.
 1. Open notebooks > `Parser.ipynb`
 2. Follow description
 3. Get `.xlsx` file with parsed data in the end
+
+## Report
+```shell
+jupyter nbconvert ./notebooks/Parser_v3.ipynb --to=html
+jupyter nbconvert ./notebooks/Parser_v3.ipynb --to=pdf
+```
